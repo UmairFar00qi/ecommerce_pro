@@ -47,6 +47,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+# Filhal test karne ke liye isay True rakhein
+CORS_ALLOW_ALL_ORIGINS = True 
+
+# Production ke liye baad mein isay specify kar sakte hain
+CORS_ALLOWED_ORIGINS = [
+    "https://eshop-frontend.onrender.com", 
+    "http://localhost:5173",
+]
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [

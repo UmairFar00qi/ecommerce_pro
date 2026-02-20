@@ -1,29 +1,26 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api'; // Central API import karein
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Naya loading state
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Button ko loading mode mein daalo
+    setIsLoading(true);
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/users/login/', {
-        username,
-        password,
-      });
-      
+      // Ab poora URL likhne ki zaroorat nahi
+      const response = await api.post('/api/users/login/', { username, password });
       localStorage.setItem('userInfo', JSON.stringify(response.data));
       navigate('/'); 
     } catch (error) {
-      alert("Invalid Credentials. Please try again.");
+      alert("Invalid Credentials or Network Error. Check if backend is live.");
     } finally {
-      setIsLoading(false); // Loading khatam karo
+      setIsLoading(false);
     }
   };
 
