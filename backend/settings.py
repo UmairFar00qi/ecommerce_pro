@@ -1,4 +1,5 @@
 import os
+import dj_database_url  # <-- 1. Yeh import lazmi add karein
 from pathlib import Path
 from datetime import timedelta
 
@@ -6,18 +7,10 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- SECURITY SETTINGS ---
-# SECRET_KEY ko environment variable se uthayen taake GitHub par leak na ho
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-w6t*=+mhk@qvii8uvz#wc8r^4can%p3!4^nx3h5^p!!qima4zp')
-
-# Production mein DEBUG hamesha False hona chahiye
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# Apne Render URL ko yahan add karein
-ALLOWED_HOSTS = [
-    'localhost', 
-    '127.0.0.1', 
-    '.onrender.com' # Is se saare Render subdomains allow ho jayenge
-]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
 # --- APPLICATION DEFINITION ---
 INSTALLED_APPS = [
@@ -38,9 +31,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Sab se top par
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Static files ke liye zaroori hai
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,15 +61,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-# --- DATABASE ---
+# --- 2. DATABASE CONFIGURATION (PostgreSQL Ready) ---
+# Yeh code detect karega ke agar DATABASE_URL mojood hai to Postgres use karega, 
+# warna local par SQLite chalata rahega.
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600
+    )
 }
 
-# --- AUTHENTICATION & JWT ---
+# --- REST FRAMEWORK & JWT ---
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -84,28 +79,23 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=30), # Aapki preference ke mutabiq 30 din
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=90),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# --- STATIC & MEDIA FILES ---
+# --- STATIC & MEDIA ---
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# WhiteNoise settings for production
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# --- CORS SETTINGS ---
-# Development ke liye True hai, lekin production mein specific URLs dena behtar hai
+# --- CORS & OTHERS ---
 CORS_ALLOW_ALL_ORIGINS = True 
-
-# --- OTHER SETTINGS ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
