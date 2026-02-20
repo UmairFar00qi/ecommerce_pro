@@ -36,13 +36,11 @@ A high-end, minimalist e-commerce web application inspired by luxury fashion bra
 * SQLite3 (Database - easily scalable to PostgreSQL)
 
 ---
+## 🔐 Client Login Credentials (for Testing)
+* **Admin Username:** ecommerce
+* **Admin Password:** e123
+* **Test User:** https://eshop-frontend-8loe.onrender.com/
 
-## Default Credentials (For Testing)
-
-**Admin Account:**
-* Username: ecommerce
-* Password: e123
-(Use this to access the Admin Control Panel and manage orders).
 
 ## Installation & Setup
 
@@ -52,3 +50,14 @@ Follow these steps to run the project locally on your machine.
 ```bash
 git clone https://github.com/UmairFar00qi/ecommerce_pro
 cd e-shop-premium
+
+
+## 🚀 Live Demo Links
+
+* **Frontend (Main Website):** https://eshop-frontend-8loe.onrender.com/
+* **Backend API Service:** https://e-shop-backend-em02.onrender.com
+* **Admin Panel:** https://e-shop-backend-em02.onrender.com/admin
+
+
+## 👤 Developer
+**Umair Farooqi** Lead Developer, Skillseducation Training Institute

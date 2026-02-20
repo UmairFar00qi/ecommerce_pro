@@ -12,6 +12,11 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
+CORS_ALLOWED_ORIGINS = [
+    "https://eshop-frontend.onrender.com", # Aapka naya live link
+    "http://localhost:5173", # Local testing ke liye
+]
+
 # --- APPLICATION DEFINITION ---
 INSTALLED_APPS = [
     'django.contrib.admin',
