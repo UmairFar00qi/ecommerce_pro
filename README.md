@@ -50,5 +50,5 @@ Follow these steps to run the project locally on your machine.
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/yourusername/e-shop-premium.git](https://github.com/yourusername/e-shop-premium.git)
+git clone https://github.com/UmairFar00qi/ecommerce_pro
 cd e-shop-premium
