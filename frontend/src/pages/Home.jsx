@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; 
+import { Link, useNavigate } from "react-router-dom"; // ✅ useNavigate yahan add kiya
 import API from "../api/axios";
 import { Star, ArrowRight, Loader2 } from "lucide-react";
 
@@ -9,14 +9,14 @@ const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const navigate = useNavigate(); // ✅ Is line ko lazmi add karein
 
   useEffect(() => {
-    // Products fetch karne ka function
     const fetchProducts = async () => {
       try {
-  
-        // Shuru mein slash (/) ya api/ mat lagayein
-       const res = await API.get('products/');
+        // Axios instance baseURL ke sath perfectly kaam karega
+        const res = await API.get('products/');
         setProducts(res.data);
       } catch (err) {
         console.error("API Error:", err);
@@ -142,15 +142,15 @@ const Home = () => {
                       </div>
                     )}
 
-                  <img
-  src={
-    product.image.startsWith("http")
-      ? product.image
-      : `${BASE_URL}${product.image}` // ✅ Ab ye dynamic ho gaya!
-  }
-  alt={product.name}
-  className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
-/>
+              <img
+                      src={
+                        product.image.startsWith("http")
+                          ? product.image
+                          : `${BASE_URL}${product.image}`
+                      }
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+                    />
                     
                     {/* Dark Overlay Button (Sleeker design) */}
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-6">

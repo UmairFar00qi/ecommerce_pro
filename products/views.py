@@ -100,15 +100,17 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from .models import Product # Apne Product model ko import karein
 
-def setup_live_db(request):
+# views.py ka aakhri hissa
+
+def create_live_admin(request):  # ✅ Naam urls.py se match hona chahiye
     # 1. Superuser Banayein
     if not User.objects.filter(username='admin').exists():
         User.objects.create_superuser('admin', 'admin@skillseducation.com', 'Admin12345')
-        msg = "🔥 Admin Created! "
+        msg = "🔥 Success: Admin 'admin' created! "
     else:
         msg = "✅ Admin already exists. "
 
-    # 2. Aik Test Product Add Karein (Agar Products khali hain)
+    # 2. Aik Test Product Add Karein
     if Product.objects.count() == 0:
         Product.objects.create(
             name="Skills Luxury Tee",
@@ -116,7 +118,7 @@ def setup_live_db(request):
             description="Premium minimalist t-shirt from Skillseducation collection.",
             countInStock=10,
             category="Apparel",
-            image="/media/placeholder.jpg" # Filhal placeholder image
+            image="/media/placeholder.jpg" 
         )
         msg += "🛍️ Test Product Added!"
     
