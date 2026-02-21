@@ -116,3 +116,17 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
+
+
+# File ke top par ye hona chahiye
+import dj_database_url
+import os
+
+# Niche DATABASES section mein ye code hona chahiye
+DATABASES = {
+    'default': dj_database_url.config(
+        # Agar DATABASE_URL (Postgres) nahi milti, to ye SQLite use karega
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600
+    )
+}

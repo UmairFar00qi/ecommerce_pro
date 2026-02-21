@@ -14,7 +14,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       // Ab poora URL likhne ki zaroorat nahi
-      const response = await api.post('/api/users/login/', { username, password });
+      const response = await API.post('users/login/', { username, password });
       localStorage.setItem('userInfo', JSON.stringify(response.data));
       navigate('/'); 
     } catch (error) {

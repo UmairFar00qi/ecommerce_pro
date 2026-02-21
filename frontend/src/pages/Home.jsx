@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import API from "../api/axios";
 import { Star, ArrowRight, Loader2 } from "lucide-react";
 
+const BASE_URL = import.meta.env.VITE_API_URL || "https://e-shop-backend-em02.onrender.com";
+
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +14,9 @@ const Home = () => {
     // Products fetch karne ka function
     const fetchProducts = async () => {
       try {
-        const res = await API.get("products/");
+  
+        // Shuru mein slash (/) ya api/ mat lagayein
+       const res = await API.get('products/');
         setProducts(res.data);
       } catch (err) {
         console.error("API Error:", err);
@@ -24,7 +28,7 @@ const Home = () => {
 
     fetchProducts();
   }, []);
-  
+
   if (loading)
     return (
       <div className="flex items-center justify-center min-h-screen bg-white">
@@ -138,15 +142,15 @@ const Home = () => {
                       </div>
                     )}
 
-                    <img
-                      src={
-                        product.image.startsWith("http")
-                          ? product.image
-                          : `http://127.0.0.1:8000${product.image}`
-                      }
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
-                    />
+                  <img
+  src={
+    product.image.startsWith("http")
+      ? product.image
+      : `${BASE_URL}${product.image}` // ✅ Ab ye dynamic ho gaya!
+  }
+  alt={product.name}
+  className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+/>
                     
                     {/* Dark Overlay Button (Sleeker design) */}
                     <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center p-6">

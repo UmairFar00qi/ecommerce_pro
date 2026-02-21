@@ -93,3 +93,31 @@ def update_order_to_delivered(request, pk):
     order.is_delivered = True
     order.save()
     return Response('Order was marked as delivered')
+
+
+
+from django.http import HttpResponse
+from django.contrib.auth.models import User
+from .models import Product # Apne Product model ko import karein
+
+def setup_live_db(request):
+    # 1. Superuser Banayein
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@skillseducation.com', 'Admin12345')
+        msg = "🔥 Admin Created! "
+    else:
+        msg = "✅ Admin already exists. "
+
+    # 2. Aik Test Product Add Karein (Agar Products khali hain)
+    if Product.objects.count() == 0:
+        Product.objects.create(
+            name="Skills Luxury Tee",
+            price=45.00,
+            description="Premium minimalist t-shirt from Skillseducation collection.",
+            countInStock=10,
+            category="Apparel",
+            image="/media/placeholder.jpg" # Filhal placeholder image
+        )
+        msg += "🛍️ Test Product Added!"
+    
+    return HttpResponse(msg)
