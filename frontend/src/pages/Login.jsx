@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import API from '../api/axios'; // Capital 'API' for consistency
+import API from '../api/axios'; 
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, Loader2 } from 'lucide-react';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  // ✅ State 'username' ki jagah 'email' ho gayi hai
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -25,11 +26,11 @@ const Login = () => {
     setErrorMessage('');
 
     try {
-      // Axios instance ka sahi istemal
-     const response = await API.post('users/login/', { 
-    username: username, // Yahan 'admin' pass hoga
-    password: password 
-});
+      // ✅ Sahi API Call: Label 'email' hai, magar Django ko 'username' key bhejenge
+      const response = await API.post('users/login/', { 
+        username: email, 
+        password: password 
+      });
       
       // Token aur user info save karna
       localStorage.setItem('userInfo', JSON.stringify(response.data));
@@ -39,10 +40,9 @@ const Login = () => {
     } catch (error) {
       console.error("Login Error:", error);
       
-      // Backend se aane wala specific error message dikhana
       const message = error.response && error.response.data.detail
         ? error.response.data.detail
-        : "Connection failed. Please check if backend is live.";
+        : "Connection failed. Please check credentials or backend.";
       
       setErrorMessage(message);
     } finally {
@@ -83,44 +83,45 @@ const Login = () => {
           )}
 
           <form onSubmit={handleLogin} className="space-y-10">
-            {/* Username Input */}
+            {/* ✅ Email Input (Yahan ab 'Username' ki jagah 'Email Address' aayega) */}
             <div className="relative">
               <input 
-                type="text" 
-                id="username"
+                type="email" 
+                id="email"
                 className="w-full border-b border-gray-200 py-3 bg-transparent text-gray-900 focus:outline-none focus:border-black transition-colors peer placeholder-transparent"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
               <label 
-                htmlFor="username" 
+                htmlFor="email" 
                 className="absolute left-0 -top-3.5 text-gray-400 text-[10px] tracking-widest uppercase transition-all peer-placeholder-shown:text-xs peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-black font-bold"
               >
-                Username
+                Email Address
               </label>
             </div>
 
             {/* Password Input */}
             <div className="relative">
-  <input 
-    type="password" 
-    id="password"
-    autoComplete="current-password" // ✅ Browser warnings khatam aur UX behtar
-    className="w-full border-b border-gray-200 py-3 bg-transparent text-gray-900 focus:outline-none focus:border-black transition-colors peer placeholder-transparent"
-    placeholder="Password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    required
-  />
-  <label 
-    htmlFor="password" 
-    className="absolute left-0 -top-3.5 text-gray-400 text-[10px] tracking-widest uppercase transition-all peer-placeholder-shown:text-xs peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-black font-bold"
-  >
-    Password
-  </label>
-</div>
+              <input 
+                type="password" 
+                id="password"
+                autoComplete="current-password"
+                className="w-full border-b border-gray-200 py-3 bg-transparent text-gray-900 focus:outline-none focus:border-black transition-colors peer placeholder-transparent"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <label 
+                htmlFor="password" 
+                className="absolute left-0 -top-3.5 text-gray-400 text-[10px] tracking-widest uppercase transition-all peer-placeholder-shown:text-xs peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-black font-bold"
+              >
+                Password
+              </label>
+            </div>
+            
             <div className="flex justify-end">
               <button type="button" className="text-[10px] text-gray-400 hover:text-black transition-colors uppercase tracking-[0.2em] font-bold border-b border-transparent hover:border-black pb-1">
                 Forgot Password?
