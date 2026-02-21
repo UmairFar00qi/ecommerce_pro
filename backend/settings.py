@@ -48,15 +48,6 @@ MIDDLEWARE = [
 ]
 
 
-# Filhal test karne ke liye isay True rakhein
-CORS_ALLOW_ALL_ORIGINS = True 
-
-# Production ke liye baad mein isay specify kar sakte hain
-CORS_ALLOWED_ORIGINS = [
-    "https://eshop-frontend.onrender.com", 
-    "http://localhost:5173",
-]
-
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -117,7 +108,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 # settings.py
-DEBUG = True  # Isay True kar ke push karein
+
 
 
 # File ke top par ye hona chahiye
@@ -132,3 +123,8 @@ DATABASES = {
         conn_max_age=600
     )
 }
+
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+DEBUG = True  # Isay True kar ke push karein

@@ -8,6 +8,7 @@ import Cart from "./pages/Cart";
 import MyOrders from "./pages/MyOrders"; 
 import ProductDetail from "./pages/ProductDetail";
 import AdminDashboard from "./pages/AdminDashboard";
+import Register from './pages/Register'; // Apna sahi folder path dijiye ga
 
 function App() {
   return (
@@ -28,6 +29,9 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/my-orders" element={<MyOrders />} />
+
+
+<Route path="/register" element={<Register />} />
           </Routes>
         </main>
 

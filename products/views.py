@@ -1,13 +1,58 @@
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from django.http import HttpResponse
+from django.db.models import Sum
+
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, IsAdminUser # IsAdminUser yahan add kiya hai
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Sum
-from .models import Product, Order, OrderItem
+
+# JWT Imports for custom login response
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+from .models import Product, Order, OrderItem, Category
 from .serializers import ProductSerializer, OrderSerializer
 
-# --- PRODUCT VIEWS ---
+# --- CUSTOM JWT LOGIN VIEW ---
+# Is se frontend ko Token ke sath User data bhi milega
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        # User details return karna
+        data['username'] = self.user.username
+        data['email'] = self.user.email
+        data['isAdmin'] = self.user.is_staff
+        data['name'] = f"{self.user.first_name}"
+        
+        return data
 
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+
+# --- USER REGISTRATION (SIGNUP) ---
+@api_view(['POST'])
+def register_user(request):
+    data = request.data
+    try:
+        if User.objects.filter(email=data['email']).exists():
+            return Response({'detail': 'User with this email already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create(
+            first_name=data['name'],
+            username=data['email'], # Email ko hi username banaya hai
+            email=data['email'],
+            password=make_password(data['password'])
+        )
+        return Response({'detail': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# --- PRODUCT VIEWS ---
 @api_view(['GET'])
 def get_products(request):
     products = Product.objects.all()
@@ -23,9 +68,10 @@ def get_product(request, pk):
     except Product.DoesNotExist:
         return Response({'detail': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# --- ORDER VIEWS (For Normal Users) ---
 
+# --- ORDER VIEWS ---
 @api_view(['POST'])
+@permission_classes([IsAuthenticated]) # Order dene ke liye login lazmi hai
 def add_order_items(request):
     user = request.user
     data = request.data
@@ -36,11 +82,11 @@ def add_order_items(request):
     else:
         # 1. Create Order
         order = Order.objects.create(
-            user=user if user.is_authenticated else None,
+            user=user,
             total_price=data['totalPrice']
         )
 
-        # 2. Create Order Items and link them to Order
+        # 2. Create Order Items
         for i in order_items:
             product = Product.objects.get(id=i['id'])
 
@@ -51,7 +97,7 @@ def add_order_items(request):
                 price=i['price']
             )
             
-            # Stock kam karne ki logic
+            # Stock Management
             product.stock -= int(i['qty'])
             product.save()
         
@@ -68,9 +114,8 @@ def get_my_orders(request):
 
 
 # --- ADMIN DASHBOARD VIEWS ---
-
 @api_view(['GET'])
-@permission_classes([IsAdminUser]) # Sirf Admin access kar sakta hai
+@permission_classes([IsAdminUser])
 def get_admin_stats(request):
     total_orders = Order.objects.count()
     total_sales = Order.objects.aggregate(Sum('total_price'))['total_price__sum'] or 0
@@ -89,44 +134,41 @@ def get_admin_stats(request):
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
 def update_order_to_delivered(request, pk):
-    order = Order.objects.get(id=pk)
-    order.is_delivered = True
-    order.save()
-    return Response('Order was marked as delivered')
+    try:
+        order = Order.objects.get(id=pk)
+        order.is_delivered = True
+        order.save()
+        return Response('Order was marked as delivered')
+    except Order.DoesNotExist:
+        return Response({'detail': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
-
-from django.http import HttpResponse
-from django.contrib.auth.models import User
-from .models import Product, Category # Category ko bhi import karein
-
-# views.py ka aakhri hissa
-
+# --- SECRET SETUP LINK ---
 def create_live_admin(request):
     try:
-        # 1. Superuser Banayein
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser('admin', 'admin@skillseducation.com', 'Admin12345')
-            msg = "🔥 Admin 'admin' created! "
-        else:
-            msg = "✅ Admin already exists. "
+        # User create/reset
+        user, created = User.objects.get_or_create(username='admin')
+        user.set_password('Admin12345')
+        user.email = 'admin@skillseducation.com'
+        user.is_staff = True
+        user.is_superuser = True
+        user.is_active = True
+        user.save()
 
-        # 2. Category Banayein ya Dhoondein
-        category_obj, created = Category.objects.get_or_create(name="Apparel")
+        msg = "🔥 Admin 'admin' Created! " if created else "✅ Admin Password Reset! "
 
-        # 3. Aik Test Product Add Karein
+        # Category & Product setup
+        category_obj, _ = Category.objects.get_or_create(name="Apparel")
         if Product.objects.count() == 0:
             Product.objects.create(
-                name="Skills Luxury Tee",
-                price=45.00,
-                description="Premium minimalist t-shirt from Skillseducation collection.",
-                stock=10, # ✅ 'countInStock' ko badal kar 'stock' kar diya
-                category=category_obj, # ✅ String ki jagah object de diya
-                image="/media/placeholder.jpg" 
+                name="Skills Luxury Tee", 
+                price=45.00, 
+                stock=10, 
+                category=category_obj,
+                description="Premium minimalist t-shirt from Skillseducation collection."
             )
             msg += "🛍️ Test Product Added!"
         
         return HttpResponse(msg)
-    
     except Exception as e:
         return HttpResponse(f"❌ Error: {str(e)}", status=500)

@@ -26,7 +26,10 @@ const Login = () => {
 
     try {
       // Axios instance ka sahi istemal
-      const response = await API.post('users/login/', { username, password });
+     const response = await API.post('users/login/', { 
+    username: username, // Yahan 'admin' pass hoga
+    password: password 
+});
       
       // Token aur user info save karna
       localStorage.setItem('userInfo', JSON.stringify(response.data));
@@ -101,23 +104,23 @@ const Login = () => {
 
             {/* Password Input */}
             <div className="relative">
-              <input 
-                type="password" 
-                id="password"
-                className="w-full border-b border-gray-200 py-3 bg-transparent text-gray-900 focus:outline-none focus:border-black transition-colors peer placeholder-transparent"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <label 
-                htmlFor="password" 
-                className="absolute left-0 -top-3.5 text-gray-400 text-[10px] tracking-widest uppercase transition-all peer-placeholder-shown:text-xs peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-black font-bold"
-              >
-                Password
-              </label>
-            </div>
-
+  <input 
+    type="password" 
+    id="password"
+    autoComplete="current-password" // ✅ Browser warnings khatam aur UX behtar
+    className="w-full border-b border-gray-200 py-3 bg-transparent text-gray-900 focus:outline-none focus:border-black transition-colors peer placeholder-transparent"
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+  />
+  <label 
+    htmlFor="password" 
+    className="absolute left-0 -top-3.5 text-gray-400 text-[10px] tracking-widest uppercase transition-all peer-placeholder-shown:text-xs peer-placeholder-shown:top-3 peer-focus:-top-3.5 peer-focus:text-[10px] peer-focus:text-black font-bold"
+  >
+    Password
+  </label>
+</div>
             <div className="flex justify-end">
               <button type="button" className="text-[10px] text-gray-400 hover:text-black transition-colors uppercase tracking-[0.2em] font-bold border-b border-transparent hover:border-black pb-1">
                 Forgot Password?
