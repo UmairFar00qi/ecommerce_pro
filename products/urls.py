@@ -2,12 +2,12 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # --- User Authentication (SAB SE UPAR RAKHEIN) ---
+    path('register/', views.register_user, name='register'), # ✅ Ab ye pehle check hoga
+    
     # --- Products ---
     path('', views.get_products, name="products"),
-    path('<str:pk>/', views.get_product, name="product"),
-    
-    # --- User Authentication ---
-    path('register/', views.register_user, name='register'), # ✅ Register endpoint
+    path('<str:pk>/', views.get_product, name="product"), # ⚠️ Isey register ke neechay hona chahiye
     
     # --- User Orders ---
     path('orders/add/', views.add_order_items, name='order-add'),
