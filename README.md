@@ -37,8 +37,8 @@ A high-end, minimalist e-commerce web application inspired by luxury fashion bra
 
 ---
 ## 🔐 Client Login Credentials (for Testing)
-* **Admin Username:** ecommerce
-* **Admin Password:** e123
+* **Admin Username:** admin
+* **Admin Password:** Admin123
 * **Test User:** https://eshop-frontend-8loe.onrender.com/
 
 
