@@ -1,14 +1,13 @@
 import axios from 'axios';
 
-// ⚠️ Sab se aham line: Render dashboard se URL uthayega
-const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+// Agar Render par VITE_API_URL set hai to wo uthayega, 
+// warna local (Sirf check karne ke liye live URL direct bhi daal sakte hain)
+const BASE_URL = import.meta.env.VITE_API_URL || "https://e-shop-backend-em02.onrender.com";
 
 const API = axios.create({
-    // Is se base path '/api/' set ho jayega
     baseURL: `${BASE_URL}/api/`, 
 });
 
-// Django ki strict routing ke liye (trailing slash logic)
 API.interceptors.request.use((config) => {
     if (config.url && !config.url.endsWith('/')) {
         config.url += '/';
