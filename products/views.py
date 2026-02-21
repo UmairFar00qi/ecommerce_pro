@@ -98,28 +98,35 @@ def update_order_to_delivered(request, pk):
 
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from .models import Product # Apne Product model ko import karein
+from .models import Product, Category # Category ko bhi import karein
 
 # views.py ka aakhri hissa
 
-def create_live_admin(request):  # ✅ Naam urls.py se match hona chahiye
-    # 1. Superuser Banayein
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser('admin', 'admin@skillseducation.com', 'Admin12345')
-        msg = "🔥 Success: Admin 'admin' created! "
-    else:
-        msg = "✅ Admin already exists. "
+def create_live_admin(request):
+    try:
+        # 1. Superuser Banayein
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser('admin', 'admin@skillseducation.com', 'Admin12345')
+            msg = "🔥 Admin 'admin' created! "
+        else:
+            msg = "✅ Admin already exists. "
 
-    # 2. Aik Test Product Add Karein
-    if Product.objects.count() == 0:
-        Product.objects.create(
-            name="Skills Luxury Tee",
-            price=45.00,
-            description="Premium minimalist t-shirt from Skillseducation collection.",
-            countInStock=10,
-            category="Apparel",
-            image="/media/placeholder.jpg" 
-        )
-        msg += "🛍️ Test Product Added!"
+        # 2. Category Banayein ya Dhoondein
+        category_obj, created = Category.objects.get_or_create(name="Apparel")
+
+        # 3. Aik Test Product Add Karein
+        if Product.objects.count() == 0:
+            Product.objects.create(
+                name="Skills Luxury Tee",
+                price=45.00,
+                description="Premium minimalist t-shirt from Skillseducation collection.",
+                stock=10, # ✅ 'countInStock' ko badal kar 'stock' kar diya
+                category=category_obj, # ✅ String ki jagah object de diya
+                image="/media/placeholder.jpg" 
+            )
+            msg += "🛍️ Test Product Added!"
+        
+        return HttpResponse(msg)
     
-    return HttpResponse(msg)
+    except Exception as e:
+        return HttpResponse(f"❌ Error: {str(e)}", status=500)
