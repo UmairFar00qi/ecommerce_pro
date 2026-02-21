@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { Star, Truck, RefreshCcw, ChevronRight, ShoppingBag } from 'lucide-react';
+// 1. Raw axios ki jagah apna sahi API import karein
+import API from '../api/axios'; 
+import { Star, Truck, RefreshCcw, ChevronRight, ShoppingBag, Loader2 } from 'lucide-react';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -9,7 +10,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Hardcoded Premium Sizes & Colors (Kyunke API mein abhi nahi hain)
+  // Hardcoded Premium Selection
   const sizes = ['XS', 'S', 'M', 'L', 'XL'];
   const colors = [
     { name: 'Onyx Black', hex: '#111111' },
@@ -18,26 +19,24 @@ const ProductDetail = () => {
     { name: 'Earthy Beige', hex: '#d7ccc8' }
   ];
 
-  const [selectedSize, setSelectedSize] = useState('M'); // Default size
-  const [selectedColor, setSelectedColor] = useState(colors[0]); // Default color
+  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedColor, setSelectedColor] = useState(colors[0]);
 
   useEffect(() => {
-    axios.get(`http://127.0.0.1:8000/api/products/${id}/`)
+    // 2. http://127.0.0.1:8000 mita kar direct API use karein
+    API.get(`products/${id}/`) 
       .then(res => {
         setProduct(res.data);
         setLoading(false);
       })
       .catch(err => {
-        console.log(err);
+        console.error("Fetch Error:", err);
         setLoading(false);
       });
   }, [id]);
 
-  // Asli Add to Cart Logic
   const handleAddToCart = () => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    
-    // Check item exists
     const exist = cart.find((item) => item.id === product.id);
 
     if (exist) {
@@ -45,7 +44,6 @@ const ProductDetail = () => {
         item.id === product.id ? { ...exist, qty: exist.qty + 1 } : item
       );
     } else {
-      // Size aur Color bhi cart mein save kar rahe hain
       cart.push({ 
         ...product, 
         qty: 1, 
@@ -55,9 +53,11 @@ const ProductDetail = () => {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event('storage')); // Navbar update karne ke liye
-    alert(`${product.name} (Size: ${selectedSize}) added to your bag!`);
-    navigate('/cart'); // Add hone ke baad direct cart par le jao
+    window.dispatchEvent(new Event('storage'));
+    
+    // Aesthetic notification instead of alert (Optional but better)
+    alert(`${product.name} added to bag!`);
+    navigate('/cart');
   };
 
   if (loading) {

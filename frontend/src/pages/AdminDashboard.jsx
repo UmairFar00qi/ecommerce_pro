@@ -7,17 +7,27 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const navigate = useNavigate();
 
-  const fetchAdminData = async () => {
+const fetchAdminData = async () => {
     try {
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const storedUser = localStorage.getItem('userInfo');
+      if (!storedUser) {
+        navigate('/login');
+        return;
+      }
+
+      const userInfo = JSON.parse(storedUser);
       const config = {
         headers: { Authorization: `Bearer ${userInfo.access}` },
       };
+
+      // Yahan endpoint path check karein:
+      // Agar axios.js mein baseURL '.../api/' hai, to ye path bilkul sahi hai.
       const { data } = await API.get('products/admin/stats/', config);
       setStats(data);
     } catch (error) {
-      alert("Unauthorized access or session expired. Please sign in as an Administrator.");
-      navigate('/');
+      console.error("Admin Fetch Error:", error);
+      alert("Unauthorized access or session expired.");
+      navigate('/login'); // Login par wapis bhejein
     }
   };
 

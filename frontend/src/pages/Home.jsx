@@ -1,27 +1,30 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; 
+import { Link } from "react-router-dom"; 
 import API from "../api/axios";
-import { Star, ArrowRight } from "lucide-react";
+import { Star, ArrowRight, Loader2 } from "lucide-react";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    API.get("products/")
-      .then((res) => {
+    // Products fetch karne ka function
+    const fetchProducts = async () => {
+      try {
+        const res = await API.get("products/");
         setProducts(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("API Error:", err);
-        setError(err.message);
+        setError("Unable to load collection. Please try again.");
+      } finally {
         setLoading(false);
-      });
-  }, []);
+      }
+    };
 
+    fetchProducts();
+  }, []);
+  
   if (loading)
     return (
       <div className="flex items-center justify-center min-h-screen bg-white">
